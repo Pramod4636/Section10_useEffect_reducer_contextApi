@@ -33,6 +33,9 @@ const passwordReducer = (state,action) => {
 const Login = (props) => {
   const [formIsValid, setFormIsValid] = useState(false);
 
+ const [emailState , dispathEmail] = useReducer(emailReducer, {value : '',isValid : undefined });
+  const [passwordState, dispatchPassword] = useReducer(passwordReducer,{value : '',isValid : undefined} );
+
   useEffect(() => {
     console.log('EFFECT RUNNING');
 
@@ -40,39 +43,40 @@ const Login = (props) => {
       console.log('EFFECT CLEANUP');
     };
   }, []);
+   
+  const {isValid : emailIsValid } = emailState ; 
+  const { isValid : passwordIsValid} = passwordState ; 
 
-  // useEffect(() => {
-  //   const identifier = setTimeout(() => {
-  //     console.log('Checking form validity!');
-  //     setFormIsValid(
-  //       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-  //     );
-  //   }, 500);
 
-  //   return () => {
-  //     console.log('CLEANUP');
-  //     clearTimeout(identifier);
-  //   };
-  // }, [enteredEmail, enteredPassword]);
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log('Checking form validity!');
+      setFormIsValid(
+       emailIsValid && passwordIsValid  
+      );
+    }, 500);
 
-  const [emailState , dispathEmail] = useReducer(emailReducer, {value : '',isValid : undefined });
+    return () => {
+      console.log('CLEANUP');
+      clearTimeout(identifier);
+    };
+  }, [emailIsValid, passwordIsValid]);
 
-  const [passwordState, dispatchPassword] = useReducer(passwordReducer,{value : '',isValid : null} );
   const emailChangeHandler = (event) => {
     
     dispathEmail({type: 'USER_INPUT',val : event.target.value});
 
-    setFormIsValid(
-      event.target.value.includes('@') && passwordState.isValid 
-    );
+    // setFormIsValid(
+    //   event.target.value.includes('@') && passwordState.isValid 
+    // );
   };
 
   const passwordChangeHandler = (event) => {
     dispatchPassword({type:'USER_INPUT' , val : event.target.value}) ; 
     
-    setFormIsValid(
-      emailState.value.includes('@') && event.target.value.trim().length > 6
-    );
+    // setFormIsValid(
+    //   emailState.value.includes('@') && event.target.value.trim().length > 6
+    // );
   };
 
   const validateEmailHandler = () => {
